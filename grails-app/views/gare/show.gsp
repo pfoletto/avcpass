@@ -83,8 +83,8 @@
 
 			<span class="button"><g:actionSubmit class="btn btn-primary" action="edit" value="${message(code: 'default.button.edit.label', default: 'Edit')}" /></span>
 <g:if test="${!partecipanti}">
-                        <span class="button"><g:actionSubmit class="btn btn-danger" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
-</g:if>
+                        <span class="button"><g:actionSubmit class="btn btn-danger" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span></g:if>
+                        <g:link action="create" class="btn btn-primary" params="[idCopia:gareInstance.id]" ><i class="glyphicon glyphicon-eject" ></i> Copia</g:link>
 
 		</g:form>
 	</div>

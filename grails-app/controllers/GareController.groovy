@@ -93,6 +93,14 @@ class GareController extends SessScadutaController{
     }
 
     def create() {
+        if(params.idCopia){
+            def gara= Gare.get(params.idCopia)
+            
+            params.cig= gara.cig
+            params.oggetto= gara.oggetto
+            params.importoAggiudicazione= gara.importoAggiudicazione
+            params.importoSommeLiquidate= gara.importoSommeLiquidate
+        }
         respond new Gare(params)
     }
 
