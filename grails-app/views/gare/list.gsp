@@ -21,7 +21,8 @@
 <section id="list-gare" class="first">
 <div class="odd">
   &nbsp; 
-        <g:link action="create" class="btn btn-primary"><g:message code="default.new.label"  args="[entityName]"/></g:link>
+        <g:link action="create" class="btn btn-primary" params="[anno:params.anno]"><g:message code="default.new.label"  args="[entityName]"/></g:link>
+        <g:link action="cerca" class="btn  btn-info" params="[anno:params.anno]"><i class="glyphicon glyphicon-search"></i> Cerca</g:link>
 </div>
  
 <br>

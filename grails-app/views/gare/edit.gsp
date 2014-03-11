@@ -80,17 +80,17 @@
 			</div>
 
                         <div class="form-group ${hasErrors(bean: gareInstance, field: 'importoAggiudicazione', 'error')} required">
-				<label for="importoAggiudicazione" class="col-sm-2 control-label"><g:message code="gare.importoAggiudicazione.label" default="Importo Aggiudicazione" /><span class="required-indicator">*</span></label>
+				<label for="importoAggiudicazione" class="col-sm-2 control-label">Importo Aggiudicazione<span class="required-indicator">*</span></label>
 				<div class="col-sm-2">
-					<g:field class="form-control" name="importoAggiudicazione" value="${fieldValue(bean: gareInstance, field: 'importoAggiudicazione')}" required=""/>
+					 € <g:field class="form-control" name="importoAggiudicazione" value="${fieldValue(bean: gareInstance, field: 'importoAggiudicazione')}" required=""/>
 					<span class="help-inline">${hasErrors(bean: gareInstance, field: 'importoAggiudicazione', 'error')}</span>
 				</div>
 			</div>
 
 			<div class="form-group ${hasErrors(bean: gareInstance, field: 'importoSommeLiquidate', 'error')} required">
-				<label for="importoSommeLiquidate" class="col-sm-2 control-label"><g:message code="gare.importoSommeLiquidate.label" default="Importo Somme Liquidate" /><span class="required-indicator">*</span></label>
+				<label for="importoSommeLiquidate" class="col-sm-2 control-label">Importo Somme Liquidate<span class="required-indicator">*</span></label>
 				<div class="col-sm-2">
-					<g:field class="form-control" name="importoSommeLiquidate" value="${fieldValue(bean: gareInstance, field: 'importoSommeLiquidate')}" required=""/>
+					€ <g:field class="form-control" name="importoSommeLiquidate" value="${fieldValue(bean: gareInstance, field: 'importoSommeLiquidate')}" required=""/>
 					<span class="help-inline">${hasErrors(bean: gareInstance, field: 'importoSommeLiquidate', 'error')}</span>
 				</div>
 			</div>

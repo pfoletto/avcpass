@@ -59,16 +59,16 @@
 				
 			</tr>
 			<tr class="prop">
-				<td valign="top" class="name"><g:message code="gare.importoAggiudicazione.label" default="Importo Aggiudicazione" /></td>
+				<td valign="top" class="name">Importo Aggiudicazione</td>
 				
-				<td valign="top" class="value">${fieldValue(bean: gareInstance, field: "importoAggiudicazione")}</td>
+				<td valign="top" class="value"><g:formatNumber number="${gareInstance?.importoAggiudicazione}" type="currency" currencyCode="EUR" /></td>
 				
 			</tr>
 		
 			<tr class="prop">
-				<td valign="top" class="name"><g:message code="gare.importoSommeLiquidate.label" default="Importo Somme Liquidate" /></td>
+				<td valign="top" class="name">Importo Somme Liquidate</td>
 				
-				<td valign="top" class="value">${fieldValue(bean: gareInstance, field: "importoSommeLiquidate")}</td>
+				<td valign="top" class="value"><g:formatNumber number="${gareInstance?.importoSommeLiquidate}" type="currency" currencyCode="EUR" /></td>
 				
 			</tr>
 		
@@ -102,6 +102,7 @@
 				<th width="10px" ></th>
 				<th><g:message code="ditta.ragioneSociale.label" default="Idufficio" /></th>
 				<th>Ruolo</th>
+				<th></th>
 
 			
 				<g:sortableColumn property="raggruppamento" title="${message(code: 'partecipanti.raggruppamento.label', default: 'Raggruppamento')}" />
@@ -117,17 +118,25 @@
 
 				<td><g:link  action="show" class="btn btn-danger" id="${partecipantiInstance.idGara}" params="[azione:'delete',idPartecipanti:partecipantiInstance.id]" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"><i class="glyphicon glyphicon-trash" ></i> Cancella</g:link></td>
 <g:if test="${partecipantiInstance.funzione == '02-AGGIUDICATARIO'}">
-                               <td><g:link  action="show" class="btn   btn-success" id="${partecipantiInstance.idGara}" params="[azione:'edit',idPartecipanti:partecipantiInstance.id]"><i class="glyphicon glyphicon-remove" ></i></g:link></td>
+                               <td><g:link  action="show" class="btn   btn-success" id="${partecipantiInstance.idGara}" params="[azione:'edit',idPartecipanti:partecipantiInstance.id, ragruppamento: partecipantiInstance.raggruppamento]"><i class="glyphicon glyphicon-remove" ></i></g:link></td>
 </g:if>
 <g:else>
-                               <td><g:link  action="show" class="btn btn-success" id="${partecipantiInstance.idGara}" params="[azione:'edit',idPartecipanti:partecipantiInstance.id, funzione:'02-AGGIUDICATARIO']" ><i class="glyphicon glyphicon-thumbs-up" ></i> Aggiudica</g:link></td>
+                               <td><g:link  action="show" class="btn btn-success" id="${partecipantiInstance.idGara}" params="[azione:'edit',idPartecipanti:partecipantiInstance.id, funzione:'02-AGGIUDICATARIO', ragruppamento: partecipantiInstance.raggruppamento]" ><i class="glyphicon glyphicon-thumbs-up" ></i> Aggiudica</g:link></td>
 </g:else>
 			
 				<td>${ Ditta.ragioneS( partecipantiInstance.idDitta )}</td>
 			
 				<td>${fieldValue(bean: partecipantiInstance, field: "funzione")}</td>
+                    <td>
+                                    <g:if test="${partecipantiInstance.raggruppamento >= 1 }">
+                                          <g:if test="${partecipantiInstance.raggruppamento != raggruppamento }">
+                                            <g:set var="raggruppamento" value="${partecipantiInstance.raggruppamento}" />
 
-                                <td><g:link controller="gare" action="raggruppamento" params="[idGara:gareInstance.id, ragruppamento: partecipantiInstance.raggruppamento]" class="btn btn-warning"><i class="glyphicon glyphicon-share"></i> </g:link> ${partecipantiInstance.raggruppamento}</td>
+                                                                    <g:link controller="gare" action="raggruppamento" params="[idGara:gareInstance.id, ragruppamento: partecipantiInstance.raggruppamento]" class="btn btn-warning"><i class="glyphicon glyphicon-share"></i> </g:link> 
+                                        </g:if>
+                                    </g:if>
+                </td>
+                                <td>${partecipantiInstance.raggruppamento}</td>
                                 <td>${partecipantiInstance.ruolo}</td>
 
 			

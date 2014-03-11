@@ -30,6 +30,13 @@
 				
 			</tr>
 		
+			<tr class="prop">
+				<td valign="top" class="name"><g:message code="setup.ente.label" default="Pubbicazione" /></td>
+				
+				<td valign="top" class="value">${setupInstance?.ente}</td>
+				
+			</tr>
+		
 		</tbody>
 	</table>
     	<div class="buttons">
