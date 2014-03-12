@@ -5,9 +5,10 @@ import groovy.xml.MarkupBuilder
  * A controller class handles incoming web requests and performs actions such as redirects, rendering views and so on.
  */
 class EsportaController extends SessScadutaController{
-    def setup= Setup.list(
-    )
+
+    
   def XML() {
+        def setup= Setup.list()
         if(!params.anno) params.anno= new Date().format('yyyy')
         def gare= !params.tipo ? Gare.findAllByAnnoAndIdufficio(params.anno,session.idufficio) : Gare.findAllByAnno(params.anno)
         def writer = new StringWriter()
@@ -78,7 +79,7 @@ class EsportaController extends SessScadutaController{
                   }
 
              importoAggiudicazione(it.importoAggiudicazione)
-             empiCompletamento(){
+             tempiCompletamento(){
                  dataInizio(Inizio)
                  dataUltimazione(Ultimazione)
              }
@@ -97,6 +98,7 @@ class EsportaController extends SessScadutaController{
 
     }
     def csv() {
+       def setup= Setup.list()
         def anno= (params.anno ? params.anno : new Date().format('yyyy'))
        def gare= Gare.findAllByAnnoAndIdufficio(anno, session.idufficio)
         def fileName= "${setup[0]?.nomeFile}_${params.anno}_${session.idufficio}.csv"
