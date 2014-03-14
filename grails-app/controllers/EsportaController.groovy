@@ -13,9 +13,9 @@ class EsportaController extends SessScadutaController{
         def gare= !params.tipo ? Gare.findAllByAnnoAndIdufficio(params.anno,session.idufficio) : Gare.findAllByAnno(params.anno)
         def writer = new StringWriter()
         def xml = new MarkupBuilder(writer)
-        xml.mkp.xmlDeclaration(version: "1.0", encoding: "utf-8")
         def fileName= !params.tipo ? "${setup[0]?.nomeFile}-${params.anno}-${session.idufficio}.xml" : "${setup[0]?.nomeFile}_${params.anno}.xml"
         
+
         xml.'legge190:pubblicazione'('xsi:schemaLocation':'legge190_1_0 datasetAppaltiL190.xsd' ,'xmlns:xsi':'http://www.w3.org/2001/XMLSchema-instance','xmlns:legge190':'legge190_1_0') {
           metadata() {
             titolo('Pubblicazione 1 legge 190')
@@ -28,15 +28,19 @@ class EsportaController extends SessScadutaController{
             licenza('IODL 2.0')
           }
           data() {
-          lotto() {
-              gare.each{
-                  cig(it.cig)
-                  def id= it.id
-                  def deno= it.denominazione
-                  def cf= it.codiceFiscaleProp
-                  def ogg= it.oggetto //.replaceAll('\\"',"'");
-                  def Inizio= it.dataInizio?.format('yyyy-MM-dd')
-                  def Ultimazione= it.dataUltimazione?.format('yyyy-MM-dd')
+          gare.each{
+              def id= it.id
+              def deno= it.denominazione
+              def cf= it.codiceFiscaleProp
+              def idCig= it.cig ?:'0000000000'
+              def ogg= it.oggetto //.replaceAll('\\"',"'");
+              def scelta=it.sceltaContraente
+              def Inizio= it.dataInizio?.format('yyyy-MM-dd')
+               def Ultimazione= it.dataUltimazione?.format('yyyy-MM-dd')
+              def importo=it.importoAggiudicazione
+              def somme=it.importoSommeLiquidate
+               lotto() {
+                  cig(idCig)
                         
                   strutturaProponente(){
                       codiceFiscaleProp(cf)
@@ -45,45 +49,15 @@ class EsportaController extends SessScadutaController{
                   oggetto(){
                         mkp.yieldUnescaped("<![CDATA[${ogg}]]>") 
                   }
-                  sceltaContraente(it.sceltaContraente)
-                  partecipanti(){
-                      def partecipantiIstance= Partecipanti.findAllByIdGara(id)
-                      
-                      partecipantiIstance.each{ a ->
-                                def ditta= Ditta.findById(a.idDitta)
-                                           
-                                partecipante(){
-                                    codiceFiscale(ditta?.codiceFiscale)
-                                    ragioneSociale(){
-                                           mkp.yieldUnescaped("<![CDATA[${ditta?.ragioneSociale}]]>") 
-                                    }
-                                }
-                      }
-                      def aggiudicatariIstance= Partecipanti.findAllByIdGaraAndFunzione(id,'02-AGGIUDICATARIO')
-                      if (aggiudicatariIstance){
-                        aggiudicatario(){
-                            aggiudicatariIstance.each{ p ->
-                                      def ditta= Ditta.findById(p.idDitta)
-
-                                      partecipante(){
-                                          codiceFiscale(ditta?.codiceFiscale)
-                                          ragioneSociale(){
-                                                 mkp.yieldUnescaped("<![CDATA[${ditta?.ragioneSociale}]]>") 
-                                          }
-                                      }
-                            }
-                        }
-                        
-                      }
-
-                  }
-
-             importoAggiudicazione(it.importoAggiudicazione)
-             tempiCompletamento(){
-                 dataInizio(Inizio)
-                 dataUltimazione(Ultimazione)
-             }
-             importoSommeLiquidate(it.importoSommeLiquidate	)
+                  sceltaContraente(scelta)
+                  tagPartecipanti(xml,id)
+                    tagAggiudicatari(xml,id)
+                    importoAggiudicazione(importo)
+                    tempiCompletamento(){
+                        dataInizio(Inizio)
+                        dataUltimazione(Ultimazione)
+                    }
+                    importoSommeLiquidate(somme	)
               }
           }
               
@@ -92,6 +66,7 @@ class EsportaController extends SessScadutaController{
         }
         response.setHeader("Content-disposition", "attachment; filename=${fileName}") 
         response.contentType = "application/xml"
+        response.outputStream  << '<?xml version="1.0" encoding="utf-8"?> \n'
         response.outputStream  << writer
         response.outputStream.flush() 
         response.outputStream.close() 
@@ -109,7 +84,7 @@ class EsportaController extends SessScadutaController{
 
         response.outputStream << "Proponente; cig; Oggetto; Scelta contraente; Partecipanti; Aggiudicatario; Importo Aggiudicazione; Data inizio; Data fine; Importo Liquidato\n" 
            gare.each { 
-                   str= it.codiceFiscaleProp + ' - ' + it.denominazione + ";" + it.cig +
+                   str= it.codiceFiscaleProp + ' - ' + it.denominazione + ";" + (it.cig ?:'0000000000') +
                                ";" + it.oggetto.replaceAll(";",",") + ";" + it.sceltaContraente +
                          ";" + partecipanti(it.id, '') + 
                          ";" + partecipanti(it.id,'02-AGGIUDICATARIO') +
@@ -134,4 +109,54 @@ class EsportaController extends SessScadutaController{
         } 
         return str
    }
+def tagPartecipanti(builder, def id) {
+  def partecipantiIstance= Partecipanti.findAllByIdGara(id)    
+
+  
+        builder.partecipanti(){
+                      partecipantiIstance.each{ a ->
+                                def ditta= Ditta.findById(a.idDitta)
+                                           
+                                builder.partecipante(){
+                                    if (ditta.estero == 1){
+                                                 builder.identificativoFiscaleEstero(ditta?.codiceFiscale)
+                                       }else{
+                                                 builder.codiceFiscale(ditta?.codiceFiscale)
+                                       }
+                                    builder.ragioneSociale(){
+                                           mkp.yieldUnescaped("<![CDATA[${ditta?.ragioneSociale}]]>") 
+                                    }
+                                }
+                      }
+                 }    
+  
 }
+def tagAggiudicatari(builder, def id) {
+    def aggiudicatariIstance= Partecipanti.findAllByIdGaraAndFunzione(id,'02-AGGIUDICATARIO')
+
+   
+        builder.aggiudicatari(){
+                                   aggiudicatariIstance.each{ p ->
+                                              def ditta= Ditta.findById(p.idDitta)
+                                
+                                            builder.aggiudicatario(){
+                                                   if (ditta.estero == 1){
+                                                             builder.identificativoFiscaleEstero(ditta?.codiceFiscale)
+                                                        }else{
+                                                             builder.codiceFiscale(ditta?.codiceFiscale)
+                                                   }
+                                                  builder.ragioneSociale(){
+                                                         mkp.yieldUnescaped("<![CDATA[${ditta?.ragioneSociale}]]>") 
+                                                  }
+                 
+                                    }
+                               }
+                 
+     
+         
+     }
+}
+
+
+}
+

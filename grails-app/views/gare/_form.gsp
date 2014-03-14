@@ -13,7 +13,7 @@
 			<div class="form-group ${hasErrors(bean: gareInstance, field: 'cig', 'error')} ">
 				<label for="cig" class="col-sm-2 control-label"><g:message code="gare.cig.label" default="Cig" /></label>
 				<div class="col-sm-2">
-					<g:textField class="form-control" name="cig" value="${gareInstance?.cig}"/>
+					<g:textField class="form-control" name="cig" maxlength="10" value="${gareInstance?.cig}"/>
 					<span class="help-inline">${hasErrors(bean: gareInstance, field: 'cig', 'error')}</span>
 				</div>
 			</div>

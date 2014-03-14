@@ -22,7 +22,7 @@ class GareController extends SessScadutaController{
 
          if (params.ditta) { 
              results = Ditta.findAllByRagioneSocialeIlikeAndCancellazioneIsNull('%' + params.ditta +'%',params)
-           resultsCount = Ditta.countByRagioneSocialeIlikeAndCancellazioneIsNull(params.ditta +'%')
+           resultsCount = Ditta.countByRagioneSocialeIlikeAndCancellazioneIsNull('%' +params.ditta +'%')
         }
        
          [dittaInstanceList: results, dittaInstanceCount: resultsCount]
@@ -36,7 +36,7 @@ class GareController extends SessScadutaController{
 
          if (params.ditta) { 
              results = Ditta.findAllByRagioneSocialeIlikeAndCancellazioneIsNull('%' + params.ditta +'%',params)
-           resultsCount = Ditta.countByRagioneSocialeIlikeAndCancellazioneIsNull(params.ditta +'%')
+           resultsCount = Ditta.countByRagioneSocialeIlikeAndCancellazioneIsNull('%' + params.ditta +'%')
         }
        
          [dittaInstanceList: results, dittaInstanceCount: resultsCount]
@@ -52,6 +52,7 @@ class GareController extends SessScadutaController{
         def query = {
            eq('anno',params.int('anno'))
            if (params.cig) ilike('cig',params.cig + '%')
+           if (params.oggetto) ilike('oggetto', '%' + params.oggetto + '%')
            eq('idufficio',session.idufficio)
            
         }
