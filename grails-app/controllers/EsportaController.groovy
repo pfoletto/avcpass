@@ -47,15 +47,15 @@ class EsportaController extends SessScadutaController{
                       denominazione(deno)
                   }
                   oggetto(){
-                        mkp.yieldUnescaped("<![CDATA[${ogg}]]>") 
+                         mkp.yieldUnescaped("<![CDATA[${ogg}]]>") 
                   }
                   sceltaContraente(scelta)
                   tagPartecipanti(xml,id)
-                    tagAggiudicatari(xml,id)
+                  tagAggiudicatari(xml,id)
                     importoAggiudicazione(importo)
                     tempiCompletamento(){
-                        dataInizio(Inizio)
-                        dataUltimazione(Ultimazione)
+                        if (Inizio) dataInizio(Inizio)
+                        if (Ultimazione) dataUltimazione(Ultimazione)
                     }
                     importoSommeLiquidate(somme	)
               }
@@ -109,11 +109,46 @@ class EsportaController extends SessScadutaController{
         } 
         return str
    }
+def tagRaggruppamento(builder, def id, def nomeNodo) {
+        def gruppo= Partecipanti.executeQuery("select max( a.raggruppamento) from Partecipanti a " +
+                     "where a.idGara = ? ",  [id])
+        
+        
+        if (gruppo[0]){
+            builder."${nomeNodo}"{
+                (1..gruppo[0]).each{
+                    def raggrupamentoIstance= Partecipanti.findAllByIdGaraAndRaggruppamento(id,it)    
+                     
+                    raggrupamentoIstance.each{ a ->
+                                def ditta= Ditta.findById(a.idDitta)
+                                           
+                                builder.membro(){
+                                    if (ditta.estero == 1){
+                                                 builder.identificativoFiscaleEstero(ditta?.codiceFiscale)
+                                       }else{
+                                                 builder.codiceFiscale(ditta?.codiceFiscale)
+                                       }
+                                    builder.ragioneSociale(){
+                                           mkp.yieldUnescaped("<![CDATA[${ditta?.ragioneSociale}]]>") 
+                                    }
+                                    builder.ruolo(a.ruolo)                                
+                                }
+                      }
+                    
+                }
+            }
+            
+        }
+        
+      
+}
 def tagPartecipanti(builder, def id) {
-  def partecipantiIstance= Partecipanti.findAllByIdGara(id)    
+    def partecipantiIstance= Partecipanti.findAll("from Partecipanti as b where b.idGara=? and (b.raggruppamento < ? or b.raggruppamento is null)", [id, 1])    
 
-  
-        builder.partecipanti(){
+       
+      builder.partecipanti(){
+                    tagRaggruppamento(builder,  id, "raggruppamento")
+
                       partecipantiIstance.each{ a ->
                                 def ditta= Ditta.findById(a.idDitta)
                                            
@@ -132,11 +167,13 @@ def tagPartecipanti(builder, def id) {
   
 }
 def tagAggiudicatari(builder, def id) {
-    def aggiudicatariIstance= Partecipanti.findAllByIdGaraAndFunzione(id,'02-AGGIUDICATARIO')
+        def aggiudicatariIstance= Partecipanti.findAll("from Partecipanti as b where b.idGara=? " +
+                                   "and funzione = '02-AGGIUDICATARIO' and (b.raggruppamento < ? or b.raggruppamento is null)", [id, 1])    
 
-   
         builder.aggiudicatari(){
-                                   aggiudicatariIstance.each{ p ->
+       //     tagRaggruppamento(builder,  id, 'aggiudicatarioRaggruppamento')
+
+            aggiudicatariIstance.each{ p ->
                                               def ditta= Ditta.findById(p.idDitta)
                                 
                                             builder.aggiudicatario(){
