@@ -24,5 +24,10 @@ class Uffici {
 	public String toString() {
             return "${ufficio}";
 	}
-    
+static String descrizione(def id){
+        def instance
+
+        if(id) instance= findById(id)
+        return instance ? instance.ufficio : ''
+    }    
 }

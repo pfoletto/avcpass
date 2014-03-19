@@ -20,6 +20,8 @@
 				<g:sortableColumn property="nomeFile" title="${message(code: 'setup.nomeFile.label', default: 'Nome File')}" />
 			
 				<g:sortableColumn property="pubbicazione" title="${message(code: 'setup.pubbicazione.label', default: 'Pubbicazione')}" />
+
+                                <g:sortableColumn property="ente" title="${message(code: 'setup.ente.label', default: 'Pubbicazione')}" />
 			
 			</tr>
 		</thead>
@@ -30,6 +32,8 @@
 				<td><g:link action="show" id="${setupInstance.id}">${fieldValue(bean: setupInstance, field: "nomeFile")}</g:link></td>
 			
 				<td><g:formatDate date="${setupInstance.pubbicazione}" /></td>
+                                
+				<td${setupInstance.ente}</td>
 			
 			</tr>
 		</g:each>

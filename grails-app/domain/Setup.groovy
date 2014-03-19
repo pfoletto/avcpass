@@ -7,9 +7,15 @@
 class Setup {
     String nomeFile
     Date pubbicazione= new Date()
+    String ente
     
     static	mapping = {
    
         }
+    
+    static	constraints = {
+        ente(nullable:true)
         
+    }
+    
 }

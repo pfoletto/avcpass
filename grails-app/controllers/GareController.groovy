@@ -11,6 +11,9 @@ class GareController extends SessScadutaController{
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
+    def cerca(){
+        
+    }
     def raggruppamento(Integer max) {
         def results = null
         def resultsCount = 0
@@ -19,7 +22,7 @@ class GareController extends SessScadutaController{
 
          if (params.ditta) { 
              results = Ditta.findAllByRagioneSocialeIlikeAndCancellazioneIsNull('%' + params.ditta +'%',params)
-           resultsCount = Ditta.countByRagioneSocialeIlikeAndCancellazioneIsNull(params.ditta +'%')
+           resultsCount = Ditta.countByRagioneSocialeIlikeAndCancellazioneIsNull('%' +params.ditta +'%')
         }
        
          [dittaInstanceList: results, dittaInstanceCount: resultsCount]
@@ -33,7 +36,7 @@ class GareController extends SessScadutaController{
 
          if (params.ditta) { 
              results = Ditta.findAllByRagioneSocialeIlikeAndCancellazioneIsNull('%' + params.ditta +'%',params)
-           resultsCount = Ditta.countByRagioneSocialeIlikeAndCancellazioneIsNull(params.ditta +'%')
+           resultsCount = Ditta.countByRagioneSocialeIlikeAndCancellazioneIsNull('%' + params.ditta +'%')
         }
        
          [dittaInstanceList: results, dittaInstanceCount: resultsCount]
@@ -48,7 +51,9 @@ class GareController extends SessScadutaController{
         
         def query = {
            eq('anno',params.int('anno'))
-           eq('idufficio',session.idufficio)
+           if (params.cig) ilike('cig',params.cig + '%')
+           if (params.oggetto) ilike('oggetto', '%' + params.oggetto + '%')
+           if (session.user.ruolo != 2)           eq('idufficio',session.idufficio)
            
         }
 
@@ -82,14 +87,22 @@ class GareController extends SessScadutaController{
                           
                           partecipanti.funzione=params.funzione
                           partecipanti.save(flush:true)
+                          
+                          if (params.int('ragruppamento') > 0){
+                                  Partecipanti.executeUpdate("update Partecipanti a  set a.funzione=?" +
+                                          "where a.idGara=? and a.raggruppamento=?", [params.funzione, params.long('id'),params.int('ragruppamento')])
+                          }
+                          
             
                           break
             }
 
-        def gruppo= Partecipanti.executeQuery("select COUNT(DISTINCT a.raggruppamento)    from Partecipanti a " +
+        def gruppo= Partecipanti.executeQuery("select max( a.raggruppamento) from Partecipanti a " +
                      "where a.idGara = ? ",  [gareInstance.id])
        
-        respond gareInstance, model:[partecipanti: Partecipanti.findAllByIdGara(gareInstance?.id,[sort:"raggruppamento"]),gruppo:gruppo[0]+1]
+        def raggruppamento= gruppo[0] ? (gruppo[0]+1)  : 1
+        
+        respond gareInstance, model:[partecipanti: Partecipanti.findAllByIdGara(gareInstance?.id,[sort:"raggruppamento"]),gruppo:raggruppamento]
     }
 
     def create() {

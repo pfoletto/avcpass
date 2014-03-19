@@ -18,3 +18,10 @@
 				</div>
 			</div>
 
+			<div class="form-group ${hasErrors(bean: setupInstance, field: 'ente', 'error')} ">
+				<label for="ente" class="col-sm-2 control-label"><g:message code="setup.ente.label" default="Ente" /></label>
+				<div class="col-sm-10">
+					<g:textField class="form-control" name="ente" value="${setupInstance?.ente}"/>
+					<span class="help-inline">${hasErrors(bean: setupInstance, field: 'ente', 'error')}</span>
+				</div>
+			</div>

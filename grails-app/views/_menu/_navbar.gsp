@@ -29,6 +29,7 @@
                             <ul class="dropdown-menu">
                                         <li class="controller"><g:link controller="esporta" action="csv" params="[anno: params.anno]">File Testo</g:link></li>
                                         <li class="controller"><g:link controller="esporta" action="XML" params="[anno: params.anno]">XML</g:link></li>
+                                        <li class="controller"><g:link controller="esporta" action="csv" params="[anno: params.anno, tipo:'totale']">File Testo Totale</g:link></li>
                                         <li class="controller"><g:link controller="esporta" action="XML" params="[anno: params.anno, tipo:'totale']">XML Totale</g:link></li>
                             </ul>
                     </li>
