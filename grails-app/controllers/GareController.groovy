@@ -53,7 +53,7 @@ class GareController extends SessScadutaController{
            eq('anno',params.int('anno'))
            if (params.cig) ilike('cig',params.cig + '%')
            if (params.oggetto) ilike('oggetto', '%' + params.oggetto + '%')
-           eq('idufficio',session.idufficio)
+           if (session.user.ruolo != 2)           eq('idufficio',session.idufficio)
            
         }
 

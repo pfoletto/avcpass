@@ -53,6 +53,7 @@
 
                                <th>Part.</th>
                                 <th>agg.</th>
+                                <th>Uff.</th>
 			
 			</tr>
 		</thead>
@@ -75,6 +76,7 @@
 
                                 <td class="${partecipanti == 0 ? 'btn-danger' :''}">${partecipanti}</td>
                                 <td class="${partecipanti == 0 ? 'btn-danger' :''}">${aggiudicatari}</td>
+                                <td>${gareInstance?.idufficio}</td>
 			
 			</tr>
 		</g:each>

@@ -73,6 +73,14 @@
 			</tr>
 		
 		
+			<tr class="prop">
+				<td valign="top" class="name">Ufficio</td>
+				
+				<td valign="top" class="value">${Uffici.descrizione(gareInstance?.idufficio)}</td>
+				
+			</tr>
+		
+		
 		
 		</tbody>
 	</table>

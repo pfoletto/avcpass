@@ -11,9 +11,11 @@ class EsportaController extends SessScadutaController{
         def setup= Setup.list()
         if(!params.anno) params.anno= new Date().format('yyyy')
         def gare= !params.tipo ? Gare.findAllByAnnoAndIdufficio(params.anno,session.idufficio) : Gare.findAllByAnno(params.anno)
+        def fileName= !params.tipo ? "${setup[0]?.nomeFile}-${params.anno}-${session.idufficio}.xml" : "${setup[0]?.nomeFile}_${params.anno}.xml"
+
         def writer = new StringWriter()
         def xml = new MarkupBuilder(writer)
-        def fileName= !params.tipo ? "${setup[0]?.nomeFile}-${params.anno}-${session.idufficio}.xml" : "${setup[0]?.nomeFile}_${params.anno}.xml"
+
         
 
         xml.'legge190:pubblicazione'('xsi:schemaLocation':'legge190_1_0 datasetAppaltiL190.xsd' ,'xmlns:xsi':'http://www.w3.org/2001/XMLSchema-instance','xmlns:legge190':'legge190_1_0') {
@@ -74,9 +76,9 @@ class EsportaController extends SessScadutaController{
     }
     def csv() {
        def setup= Setup.list()
-        def anno= (params.anno ? params.anno : new Date().format('yyyy'))
-       def gare= Gare.findAllByAnnoAndIdufficio(anno, session.idufficio)
-        def fileName= "${setup[0]?.nomeFile}_${params.anno}_${session.idufficio}.csv"
+       def anno= (params.anno ? params.anno : new Date().format('yyyy'))
+       def gare= !params.tipo ? Gare.findAllByAnnoAndIdufficio(params.anno,session.idufficio) : Gare.findAllByAnno(params.anno)
+       def fileName= "${setup[0]?.nomeFile}-${anno}" + (!params.tipo ? "-${session.idufficio}.csv" : ".csv")
 
         def str= ""
         response.setHeader("Content-disposition", "attachment; filename=${fileName}") 
@@ -145,7 +147,10 @@ def tagRaggruppamento(builder, def id, def nomeNodo) {
 def tagPartecipanti(builder, def id) {
     def partecipantiIstance= Partecipanti.findAll("from Partecipanti as b where b.idGara=? and (b.raggruppamento < ? or b.raggruppamento is null)", [id, 1])    
 
-       
+    if(!partecipantiIstance){     
+                builder.partecipanti("")
+                return
+    }
       builder.partecipanti(){
                     tagRaggruppamento(builder,  id, "raggruppamento")
 
@@ -170,10 +175,14 @@ def tagAggiudicatari(builder, def id) {
         def aggiudicatariIstance= Partecipanti.findAll("from Partecipanti as b where b.idGara=? " +
                                    "and funzione = '02-AGGIUDICATARIO' and (b.raggruppamento < ? or b.raggruppamento is null)", [id, 1])    
 
-        builder.aggiudicatari(){
-       //     tagRaggruppamento(builder,  id, 'aggiudicatarioRaggruppamento')
+        if(!aggiudicatariIstance){
+            builder.aggiudicatari("")
+            return
+        }
+            builder.aggiudicatari(){
+                 tagRaggruppamento(builder,  id, 'aggiudicatarioRaggruppamento')
 
-            aggiudicatariIstance.each{ p ->
+                 aggiudicatariIstance.each{ p ->
                                               def ditta= Ditta.findById(p.idDitta)
                                 
                                             builder.aggiudicatario(){
@@ -191,7 +200,8 @@ def tagAggiudicatari(builder, def id) {
                  
      
          
-     }
+         }
+     
 }
 
 
